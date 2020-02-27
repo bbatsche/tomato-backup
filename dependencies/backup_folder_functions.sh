@@ -17,7 +17,7 @@ if [ -z $script_loaded_backup_folder_functions ]; then
     ScriptInfo_backup_folder_functions
 
     # [# Global Static Variables #]
-    SCRIPT_DEPENDENCIES_DIRECTORY="$(dirname $0)"
+    SCRIPT_DEPENDENCIES_DIRECTORY="$(dirname $0)/dependencies"
     #   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -
 
     # [# Included Libraries & Scripts #] -------------------------------------------------------------------------------

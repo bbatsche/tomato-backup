@@ -17,7 +17,7 @@ if [ -z $script_loaded_backup_sysinfo_functions ]; then
     ScriptInfo_backup_sysinfo_functions
 
     # [# Global Static Variables #]
-    SCRIPT_DEPENDENCIES_DIRECTORY="$(dirname $0)"
+    SCRIPT_DEPENDENCIES_DIRECTORY="$(dirname $0)/dependencies"
 
     # [# Included Libraries & Scripts #] -------------------------------------------------------------------------------
     source "$SCRIPT_DEPENDENCIES_DIRECTORY/files_and_folder_functions.sh"

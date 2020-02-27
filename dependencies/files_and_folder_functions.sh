@@ -17,7 +17,7 @@ if [ -z $script_loaded_files_and_folder_functions ]; then
     ScriptInfo_files_and_folder_functions
 
     # [# Global Static Variables #]
-    SCRIPTS_DEPENDENCIES_DIRECTORY="$(dirname $0)"
+    SCRIPTS_DEPENDENCIES_DIRECTORY="$(dirname $0)/dependencies"
 
     # [# Included Libraries & Scripts #] -------------------------------------------------------------------------------
     source "$SCRIPTS_DEPENDENCIES_DIRECTORY/color_text_functions.sh"
