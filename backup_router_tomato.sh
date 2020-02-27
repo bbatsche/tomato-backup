@@ -1,16 +1,18 @@
 #!/bin/sh
 
 ScriptInfo_backup_router() {
-SCRIPT_NAME="Tomato Router Backup Script"; SCRIPT_VERSION="3.0"; SCRIPT_DATE="2020-02-27"; SCRIPT_AUTHER="Ben Batschelet"; SCRIPT_AUTHER_CONTACT="ben.batschelet@gmail.com"
-SCRIPT_DESCRIPTION="Selctively backup everything on your Tomato router"
-SCRIPT_TITLE="$SCRIPT_NAME - v$SCRIPT_VERSION - $SCRIPT_DATE - $SCRIPT_AUTHER ($SCRIPT_AUTHER_CONTACT) \n   ∟ Description: $SCRIPT_DESCRIPTION"
-echo -e " $(YEL "▶︎") $SCRIPT_TITLE"; }
-# -------------------------------------------------------------------------------------------------
+    SCRIPT_NAME="Tomato Router Backup Script"; SCRIPT_VERSION="3.0"; SCRIPT_DATE="2020-02-27"; SCRIPT_AUTHER="Ben Batschelet"; SCRIPT_AUTHER_CONTACT="ben.batschelet@gmail.com"
+    SCRIPT_DESCRIPTION="Selctively backup everything on your Tomato router"
+    SCRIPT_TITLE="$SCRIPT_NAME - v$SCRIPT_VERSION - $SCRIPT_DATE - $SCRIPT_AUTHER ($SCRIPT_AUTHER_CONTACT) \n   ∟ Description: $SCRIPT_DESCRIPTION"
+    echo -e " $(YEL "▶︎") $SCRIPT_TITLE";
+}
+
+# ----------------------------------------------------------------------------------------------------------------------
 # General Usage: sh "/mnt/usb8gb/active_system/scripts/backup/backup_router_tomato.sh"
-# =================================================================================================
+# ======================================================================================================================
 # Notes:
-#	Uses Color Functions Script (source /.../color_text_functions.sh)
-# =================================================================================================
+#   Uses Color Functions Script (source /.../color_text_functions.sh)
+# ======================================================================================================================
 # [# Global Static Variables #]
 SCRIPT_FILENAME="$(basename $0)"
 SCRIPT_DIRECTORY="$(dirname $0)"
@@ -36,53 +38,52 @@ source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_nvram_encapsulated_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_nvram_raw_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_sysinfo_functions.sh"
 
-# [# Functions #] --------------------------------------------------------------------------------------
+# [# Functions #] ------------------------------------------------------------------------------------------------------
 
-WHT "[# Running Main #]" # --------------------------------------------------------------------------------------
+WHT "[# Running Main #]"
 # Output Script Title
 ScriptInfo_backup_router
 
-# [# Read Passed Varables #] --------------------------------------------------------------------------------------
+# [# Read Passed Varables #] -------------------------------------------------------------------------------------------
 # Set Scripts Dependencies Directory (Glodal)
 echo -ne " ∟ Backup Type (default|limited|full)"
 if [ -z "$1" ]; then
-	echo "  [ NOT Passed ]"
+    echo "  [ NOT Passed ]"
 else
-	echo "  [ Passed ]"
-	case $1 in  # Proccess Passed Input
-		limit|Limit|LIMIT|limited|Limited|LIMITED|1) # Limited Backup
-			main_backup_type=1;;
-		full|Full|FULL|3)  # Full Backup
-			main_backup_type=3;;
-		*) # catch all (default)
-			main_backup_type=2;;
-	esac
+    echo "  [ Passed ]"
+    case $1 in  # Proccess Passed Input
+        limit|Limit|LIMIT|limited|Limited|LIMITED|1) # Limited Backup
+            main_backup_type=1;;
+        full|Full|FULL|3)  # Full Backup
+            main_backup_type=3;;
+        *) # catch all (default)
+            main_backup_type=2;;
+    esac
 fi
 echo -ne "   ∟ Using: ($main_backup_type) = "
 case $main_backup_type in
-	1)  # Limited Backup
-		MAG "Limited Backup"
-		main_backup_destination_directory_name_suffix="-LimitedBackup";; #  append "-LimitedBackup" to Backup Destination Path
-	2) # Standard (Default) Backup
-		GRN "Standard (Default) Backup"
-		main_backup_destination_directory_name_suffix="-StandardBackup";; #  append "-StandardBackup" to Backup Destination Path
-	3) # Full Backup
-		RED "Full Backup"
-		main_backup_destination_directory_name_suffix="-FullBackup";; #  append "-FullBackup" to Backup Destination Path
-	*) # catch all
-		WRN "ERROR";;
+    1)  # Limited Backup
+        MAG "Limited Backup"
+        main_backup_destination_directory_name_suffix="-LimitedBackup";; #  append "-LimitedBackup" to Backup Destination Path
+    2) # Standard (Default) Backup
+        GRN "Standard (Default) Backup"
+        main_backup_destination_directory_name_suffix="-StandardBackup";; #  append "-StandardBackup" to Backup Destination Path
+    3) # Full Backup
+        RED "Full Backup"
+        main_backup_destination_directory_name_suffix="-FullBackup";; #  append "-FullBackup" to Backup Destination Path
+    *) # catch all
+        WRN "ERROR";;
 esac
 
 
-WHT "[# Running Backups #]" # --------------------------------------------------------------------------------------
+WHT "[# Running Backups #]"
 # Output Script Title
 ScriptInfo_backup_router
 
 # Set Destination Path
-main_backup_destination_directory_path="$main_backup_destination_directory_root/$main_backup_destination_directory_name_prefix"_"$(date +%Y-%m-%d_%H%M%S)"_"($OS_VERSION_UNDERSCORED)$main_backup_destination_directory_name_suffix" # _$(date +%Y-%m-%d_%H%M%S)_($OS_VERSION_UNDERSCORED)"
+main_backup_destination_directory_path="$main_backup_destination_directory_root/$main_backup_destination_directory_name_prefix"_"$(date +%Y-%m-%d_%H%M%S)"_"($OS_VERSION_UNDERSCORED)$main_backup_destination_directory_name_suffix"
 
 # Purge/Cleanup Old Backups
-#cleanupFolder "$main_backup_destination_directory_root" $main_backup_retention_number ".*$main_backup_destination_directory_name_prefix.*$main_backup_destination_directory_name_suffix"  # will filter with main_backup_destination_directory_name_suffix
 cleanupFolder "$main_backup_destination_directory_root" $main_backup_retention_number ".*$main_backup_destination_directory_name_prefix.*"
 
 WHT "[# Starting Backups #]" # --------------------------------------------------------------------------------------
@@ -94,20 +95,20 @@ backupNVRamRAW "NVRam RAW Configuration" "$main_backup_destination_directory_pat
 
 # Standard (Default) Backup
 if [ $main_backup_type -ge 2 ]; then
-	backupNVRamEcapsulated "NVRam (Encapsulated)" "$main_backup_destination_directory_path/NVRam" "tomato_nvram_encapsulated_" "$main_backup_note" "_sufix.cfg" "$main_backup_retention_number" "" ""
-	backupNVRamEcapsulated "NVRam (Encapsulated) Filtered" "$main_backup_destination_directory_path/NVRam" "tomato_nvram_encapsulated_filtered_" "$main_backup_note" "_sufix.cfg" "$main_backup_retention_number" "NC|clkfreq|ddnsx|dhcpd|ftp|http|lan_hostname|lan_ipaddr|lan_netmask|lan_proto|log|ntp|qos|rstats|sch|script|sesx|smbd|snmp|sshd|telnetd|tm|usb|vpn_server_|vpn_server1|wan_dns|wan_hostname|web|wl0_" ""
+    backupNVRamEcapsulated "NVRam (Encapsulated)" "$main_backup_destination_directory_path/NVRam" "tomato_nvram_encapsulated_" "$main_backup_note" "_sufix.cfg" "$main_backup_retention_number" "" ""
+    backupNVRamEcapsulated "NVRam (Encapsulated) Filtered" "$main_backup_destination_directory_path/NVRam" "tomato_nvram_encapsulated_filtered_" "$main_backup_note" "_sufix.cfg" "$main_backup_retention_number" "NC|clkfreq|ddnsx|dhcpd|ftp|http|lan_hostname|lan_ipaddr|lan_netmask|lan_proto|log|ntp|qos|rstats|sch|script|sesx|smbd|snmp|sshd|telnetd|tm|usb|vpn_server_|vpn_server1|wan_dns|wan_hostname|web|wl0_" ""
 
-	backupFile "System Log" "/tmp/var/log/messages" "$main_backup_destination_directory_path" "syslog_" "$main_backup_note" ".log" "$main_backup_retention_number"
-	backupFile "Web Usage Domains" "/proc/webmon_recent_domains" "$main_backup_destination_directory_path" "webmon_recent_domains_" "$main_backup_note" ".txt" "$main_backup_retention_number"
-	backupFile "Web Usage Searches" "/proc/webmon_recent_searches" "$main_backup_destination_directory_path" "webmon_recent_searches_" "$main_backup_note" ".txt" "$main_backup_retention_number"
-	backupFolder "Scripts Backup (Temp)" "/tmp/*.sh" "" "$main_backup_destination_directory_path" "scripts_backups_tmp_" "$main_backup_note" "" "$main_backup_retention_number"
+    backupFile "System Log" "/tmp/var/log/messages" "$main_backup_destination_directory_path" "syslog_" "$main_backup_note" ".log" "$main_backup_retention_number"
+    backupFile "Web Usage Domains" "/proc/webmon_recent_domains" "$main_backup_destination_directory_path" "webmon_recent_domains_" "$main_backup_note" ".txt" "$main_backup_retention_number"
+    backupFile "Web Usage Searches" "/proc/webmon_recent_searches" "$main_backup_destination_directory_path" "webmon_recent_searches_" "$main_backup_note" ".txt" "$main_backup_retention_number"
+    backupFolder "Scripts Backup (Temp)" "/tmp/*.sh" "" "$main_backup_destination_directory_path" "scripts_backups_tmp_" "$main_backup_note" "" "$main_backup_retention_number"
 fi
 
 # Full Backup
 if [ $main_backup_type -ge 3 ]; then
-	backupFolder "Active System Backup" "-r" "$(dirname "$(dirname "$SCRIPT_DIRECTORY")")/" "$main_backup_destination_directory_path" "active_system_backup_" "$main_backup_note" "" "$main_backup_retention_number"
+    backupFolder "Active System Backup" "-r" "$(dirname "$(dirname "$SCRIPT_DIRECTORY")")/" "$main_backup_destination_directory_path" "active_system_backup_" "$main_backup_note" "" "$main_backup_retention_number"
 
-	backupArchive "Optware" "/opt" "$main_backup_destination_directory_path" "optware_" "$main_backup_note" "" "$main_backup_retention_number"
-	### To Extract the Optware Archive:		http://www.dd-wrt.com/wiki/index.php/Optware#.2Fopt_backup
-	# cd /; tar xvzf "$(nvram get usb_disk_main)/Tomato/Optware-Archive/Optware_2011-05-01_181510.tar.gz"
+    backupArchive "Optware" "/opt" "$main_backup_destination_directory_path" "optware_" "$main_backup_note" "" "$main_backup_retention_number"
+    ### To Extract the Optware Archive:     http://www.dd-wrt.com/wiki/index.php/Optware#.2Fopt_backup
+    # cd /; tar xvzf "$(nvram get usb_disk_main)/Tomato/Optware-Archive/Optware_2011-05-01_181510.tar.gz"
 fi
