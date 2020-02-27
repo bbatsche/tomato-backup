@@ -116,7 +116,7 @@ if [ -z $script_loaded_backup_nvram_raw_functions ]; then
         # Check if Destination Exist
         if [ -d "$backup_destination_directory" ]; then
             # Preform standard opterations
-            nvram backup /tmp/nvram_config.cfg
+            nvram save /tmp/nvram_config.cfg
             mv "/tmp/nvram_config.cfg" "$backup_destination_path"
         else
             WRN "Backup Destination NOT Valid"

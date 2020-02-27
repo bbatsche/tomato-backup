@@ -44,38 +44,6 @@ WHT "[# Running Main #]"
 # Output Script Title
 ScriptInfo_backup_router
 
-# [# Read Passed Varables #] -------------------------------------------------------------------------------------------
-# Set Scripts Dependencies Directory (Glodal)
-echo -ne " ∟ Backup Type (default|limited|full)"
-if [ -z "$1" ]; then
-    echo "  [ NOT Passed ]"
-else
-    echo "  [ Passed ]"
-    case $1 in  # Proccess Passed Input
-        limit|Limit|LIMIT|limited|Limited|LIMITED|1) # Limited Backup
-            main_backup_type=1;;
-        full|Full|FULL|3)  # Full Backup
-            main_backup_type=3;;
-        *) # catch all (default)
-            main_backup_type=2;;
-    esac
-fi
-echo -ne "   ∟ Using: ($main_backup_type) = "
-case $main_backup_type in
-    1)  # Limited Backup
-        MAG "Limited Backup"
-        main_backup_destination_directory_name_suffix="-LimitedBackup";; #  append "-LimitedBackup" to Backup Destination Path
-    2) # Standard (Default) Backup
-        GRN "Standard (Default) Backup"
-        main_backup_destination_directory_name_suffix="-StandardBackup";; #  append "-StandardBackup" to Backup Destination Path
-    3) # Full Backup
-        RED "Full Backup"
-        main_backup_destination_directory_name_suffix="-FullBackup";; #  append "-FullBackup" to Backup Destination Path
-    *) # catch all
-        WRN "ERROR";;
-esac
-
-
 WHT "[# Running Backups #]"
 # Output Script Title
 ScriptInfo_backup_router
@@ -88,27 +56,4 @@ cleanupFolder "$main_backup_destination_directory_root" $main_backup_retention_n
 
 WHT "[# Starting Backups #]" # --------------------------------------------------------------------------------------
 backupSysinfo "Backup System Information" "$main_backup_destination_directory_path" "sysinfo_" "$main_backup_note" ".txt" "$main_backup_retention_number"
-
-# Limited (just the basics) Backup
-# This part of the backup will run no matter what
 backupNVRamRAW "NVRam RAW Configuration" "$main_backup_destination_directory_path/NVRam" "tomato_nvram_raw_" "$main_backup_note" "_sufix.cfg" "$main_backup_retention_number"
-
-# Standard (Default) Backup
-if [ $main_backup_type -ge 2 ]; then
-    backupNVRamEcapsulated "NVRam (Encapsulated)" "$main_backup_destination_directory_path/NVRam" "tomato_nvram_encapsulated_" "$main_backup_note" "_sufix.cfg" "$main_backup_retention_number" "" ""
-    backupNVRamEcapsulated "NVRam (Encapsulated) Filtered" "$main_backup_destination_directory_path/NVRam" "tomato_nvram_encapsulated_filtered_" "$main_backup_note" "_sufix.cfg" "$main_backup_retention_number" "NC|clkfreq|ddnsx|dhcpd|ftp|http|lan_hostname|lan_ipaddr|lan_netmask|lan_proto|log|ntp|qos|rstats|sch|script|sesx|smbd|snmp|sshd|telnetd|tm|usb|vpn_server_|vpn_server1|wan_dns|wan_hostname|web|wl0_" ""
-
-    backupFile "System Log" "/tmp/var/log/messages" "$main_backup_destination_directory_path" "syslog_" "$main_backup_note" ".log" "$main_backup_retention_number"
-    backupFile "Web Usage Domains" "/proc/webmon_recent_domains" "$main_backup_destination_directory_path" "webmon_recent_domains_" "$main_backup_note" ".txt" "$main_backup_retention_number"
-    backupFile "Web Usage Searches" "/proc/webmon_recent_searches" "$main_backup_destination_directory_path" "webmon_recent_searches_" "$main_backup_note" ".txt" "$main_backup_retention_number"
-    backupFolder "Scripts Backup (Temp)" "/tmp/*.sh" "" "$main_backup_destination_directory_path" "scripts_backups_tmp_" "$main_backup_note" "" "$main_backup_retention_number"
-fi
-
-# Full Backup
-if [ $main_backup_type -ge 3 ]; then
-    backupFolder "Active System Backup" "-r" "$(dirname "$(dirname "$SCRIPT_DIRECTORY")")/" "$main_backup_destination_directory_path" "active_system_backup_" "$main_backup_note" "" "$main_backup_retention_number"
-
-    backupArchive "Optware" "/opt" "$main_backup_destination_directory_path" "optware_" "$main_backup_note" "" "$main_backup_retention_number"
-    ### To Extract the Optware Archive:     http://www.dd-wrt.com/wiki/index.php/Optware#.2Fopt_backup
-    # cd /; tar xvzf "$(nvram get usb_disk_main)/Tomato/Optware-Archive/Optware_2011-05-01_181510.tar.gz"
-fi
