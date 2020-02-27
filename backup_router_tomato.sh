@@ -34,7 +34,6 @@ source "$SCRIPT_DEPENDENCIES_DIRECTORY/color_text_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_file_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_folder_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_folder_archive_functions.sh"
-source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_nvram_encapsulated_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_nvram_raw_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_sysinfo_functions.sh"
 
