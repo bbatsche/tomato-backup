@@ -1,14 +1,16 @@
 #!/bin/sh
 
-ScriptInfo_backup_router() {
-    SCRIPT_NAME="Tomato Router Backup Script"; SCRIPT_VERSION="3.0"; SCRIPT_DATE="2020-02-27"; SCRIPT_AUTHER="Ben Batschelet"; SCRIPT_AUTHER_CONTACT="ben.batschelet@gmail.com"
-    SCRIPT_DESCRIPTION="Selctively backup everything on your Tomato router"
+ScriptInfo_archive_opt() {
+    SCRIPT_NAME="Tomato Router Archive Opt"; SCRIPT_VERSION="1.0"; SCRIPT_DATE="2020-03-02"; SCRIPT_AUTHER="Ben Batschelet"; SCRIPT_AUTHER_CONTACT="ben.batschelet@gmail.com"
+    SCRIPT_DESCRIPTION="Tar /opt directory to a Samba mount."
     SCRIPT_TITLE="$SCRIPT_NAME - v$SCRIPT_VERSION - $SCRIPT_DATE - $SCRIPT_AUTHER ($SCRIPT_AUTHER_CONTACT) \n   ∟ Description: $SCRIPT_DESCRIPTION"
     echo -e " $(YEL "▶︎") $SCRIPT_TITLE";
 }
 
+# tar -cf archive.tar -X exclude.txt /opt
+
 # ----------------------------------------------------------------------------------------------------------------------
-# General Usage: sh "/mnt/usb8gb/active_system/scripts/backup/backup_router_tomato.sh"
+# General Usage: sh "/mnt/usb8gb/active_system/scripts/backup/archive_opt.sh"
 # ======================================================================================================================
 # Notes:
 #   Uses Color Functions Script (source /.../color_text_functions.sh)
@@ -22,9 +24,12 @@ OS_VERSION=$(nvram get os_version)
 OS_VERSION_UNDERSCORED=$(nvram get os_version | sed -e 's/ /_/g')
 
 # [# Passed Variables Defaults #]
-main_backup_destination_directory_root="/opt/backups"
-main_backup_retention_number=120  # Number of backups to keep
-main_backup_note="$OS_VERSION_UNDERSCORED"
+main_archive_destination_directory_name_prefix="tomato_router_archive"
+main_archive_destination_directory_name_suffix=""
+main_archive_destination_directory_root="/cifs1/Router"
+main_archive_retention_number=120  # Number of archives to keep
+main_archive_note="$OS_VERSION_UNDERSCORED"
+main_archive_exclude_file="$SCRIPT_DIRECTORY/archive_exclude.conf"
 
 echo "[# Loading Dependencies & Source Scripts #]"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/color_text_functions.sh"
@@ -32,15 +37,12 @@ source "$SCRIPT_DEPENDENCIES_DIRECTORY/color_text_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_file_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_folder_functions.sh"
 source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_folder_archive_functions.sh"
-source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_nvram_raw_functions.sh"
-source "$SCRIPT_DEPENDENCIES_DIRECTORY/backup_sysinfo_functions.sh"
 
 # [# Functions #] ------------------------------------------------------------------------------------------------------
 
-WHT "[# Running Backups #]"
+WHT "[# Running Archive #]"
 # Output Script Title
-ScriptInfo_backup_router
+ScriptInfo_archive_opt
 
-WHT "[# Starting Backups #]" # --------------------------------------------------------------------------------------
-backupSysinfo "Backup System Information" "$main_backup_destination_directory_root" "sysinfo_" "$main_backup_note" ".txt" "$main_backup_retention_number"
-backupNVRamRAW "NVRam RAW Configuration" "$main_backup_destination_directory_root" "tomato_nvram_raw_" "$main_backup_note" "_sufix.cfg" "$main_backup_retention_number"
+WHT "[# Starting Archive #]" # -----------------------------------------------------------------------------------------
+backupArchive "Archive /opt to Samba Mount" "/opt" "$main_archive_destination_directory_root" "$main_archive_destination_directory_name_prefix" "$main_archive_note" "$main_archive_destination_directory_name_suffix" "$main_archive_retention_number" "$main_archive_exclude_file"

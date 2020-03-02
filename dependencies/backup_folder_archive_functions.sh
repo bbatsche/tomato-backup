@@ -40,6 +40,7 @@ if [ -z $script_loaded_backup_folder_archive_functions ]; then
         backup_note="note"
         backup_destination_filename_suffix=""  # "_suffix"
         backup_retention_number=64
+        backup_exclude_file=""
 
         # Set Backup Task Name
         if [ -z "$1" ]; then
@@ -104,6 +105,15 @@ if [ -z $script_loaded_backup_folder_archive_functions ]; then
         fi
         BLU "∟ Using: $(WHT "$backup_retention_number")"
 
+        # Set Source for paths to exclude
+        if [ -z "$8" ]; then
+            YEL "Exclude File Path $(WHT "[") $(RED "NOT Passed") $(WHT "]")"
+        else
+            YEL "Exclude File Path $(WHT "[") $(GRN "Passed") $(WHT "]")"
+            backup_exclude_file="$8"
+        fi
+        BLU "∟ Using: $(WHT "$backup_exclude_file")"
+
         # [# Main #] ---------------------------------------------------------------------------------------------------
         # [# Variables #]
         backup_destination_filename="$backup_destination_filename_prefix$(date +%Y-%m-%d_%H%M%S)_($backup_note)$backup_destination_filename_suffix.tar.gz"
@@ -125,8 +135,13 @@ if [ -z $script_loaded_backup_folder_archive_functions ]; then
         NRM "Archiving: $(BLK "$backup_source") -> $(BLK "$backup_destination_path")"
         # Check if Source & Destination Exist
         if [ -d "$backup_source" ] && [ -d "$backup_destination_directory" ]; then
-            # Preform standard opterations
-            tar -zcf "$backup_destination_path" "$backup_source"
+            if [ -f "$backup_exclude_file" ]; then
+                # Preform backup with paths excluded
+                tar -zc -X "$backup_exclude_file" -f "$backup_destination_path" "$backup_source"
+            else
+                # Preform standard opterations
+                tar -zcf "$backup_destination_path" "$backup_source"
+            fi
         else
             WRN "Backup Source or Destination NOT Valid"
         fi
